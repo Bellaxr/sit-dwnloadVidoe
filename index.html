@@ -1,645 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VidGrab - Video Downloader</title>
-    <style>
-        :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --text-color: #2b2d42;
-            --bg-color: #f8f9fa;
-            --card-color: #ffffff;
-            --input-bg: #e9ecef;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-
-        .dark-mode {
-            --primary-color: #4895ef;
-            --secondary-color: #4361ee;
-            --text-color: #f8f9fa;
-            --bg-color: #121212;
-            --card-color: #1e1e1e;
-            --input-bg: #2d2d2d;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: var(--transition);
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header Styles */
-        header {
-            padding: 20px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .theme-toggle, .language-toggle {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            color: var(--text-color);
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: var(--transition);
-        }
-
-        .theme-toggle:hover, .language-toggle:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        .dark-mode .theme-toggle:hover, .dark-mode .language-toggle:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Hero Section */
-        .hero {
-            text-align: center;
-            padding: 60px 0 40px;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 700px;
-            margin: 0 auto 30px;
-        }
-
-        /* Downloader Section */
-        .downloader-container {
-            background-color: var(--card-color);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: var(--shadow);
-            margin-bottom: 40px;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        #video-url {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid var(--input-bg);
-            border-radius: 12px;
-            font-size: 16px;
-            background-color: var(--input-bg);
-            transition: var(--transition);
-        }
-
-        #video-url:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        #download-btn {
-            padding: 0 30px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        #download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-
-        /* Video Info Section */
-        .video-info {
-            display: none;
-            margin-top: 30px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .video-preview {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .thumbnail-container {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .thumbnail {
-            width: 100%;
-            border-radius: 12px;
-            aspect-ratio: 16/9;
-            background-color: var(--input-bg);
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .thumbnail img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .video-details {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .video-title {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .video-meta {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .format-options {
-            margin-top: 20px;
-        }
-
-        .format-title {
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .format-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .format-btn {
-            padding: 12px;
-            background-color: var(--input-bg);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-        }
-
-        .format-btn:hover {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        /* CPA Offers Section */
-        #offerContainer {
-            margin-top: 30px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .offer-card {
-            background-color: var(--card-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-        }
-
-        .offer-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .offer-card a {
-            display: block;
-            text-decoration: none;
-            color: var(--text-color);
-        }
-
-        .offer-title {
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-
-        .offer-description {
-            margin-bottom: 15px;
-            opacity: 0.9;
-        }
-
-        .offer-cta {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-
-        /* Footer */
-        footer {
-            padding: 40px 0;
-            text-align: center;
-            margin-top: 60px;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .dark-mode footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: var(--text-color);
-            text-decoration: none;
-            opacity: 0.8;
-            transition: var(--transition);
-        }
-
-        .footer-links a:hover {
-            opacity: 1;
-            color: var(--primary-color);
-        }
-
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .social-icons a {
-            color: var(--text-color);
-            font-size: 20px;
-            opacity: 0.7;
-            transition: var(--transition);
-        }
-
-        .social-icons a:hover {
-            opacity: 1;
-            color: var(--primary-color);
-        }
-
-        .copyright {
-            opacity: 0.6;
-            font-size: 0.9rem;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* RTL Support */
-        [dir="rtl"] {
-            text-align: right;
-        }
-
-        [dir="rtl"] .input-group {
-            flex-direction: row-reverse;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .input-group {
-                flex-direction: column;
-            }
-            
-            #download-btn {
-                padding: 15px;
-            }
-        }
-
-        /* Loading Animation */
-        .loader {
-            display: none;
-            width: 50px;
-            height: 50px;
-            margin: 20px auto;
-            border: 5px solid rgba(67, 97, 238, 0.2);
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🌙 VideoGenius - Download Videos Easily</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* === Reset & basics === */
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      direction: ltr;
+      user-select: none;
+    }
+    /* === CSS Variables for themes === */
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --text: #c9d1d9;
+      --primary: #58a6ff;
+      --accent: #2f81f7;
+      --btn-bg: #238636;
+      --btn-hover-bg: #2ea043;
+      --radius: 12px;
+      --shadow: rgba(88, 166, 255, 0.3);
+    }
+    [data-theme="light"] {
+      --bg: #f5f8ff;
+      --card-bg: #ffffff;
+      --text: #222;
+      --primary: #2f54eb;
+      --accent: #0958d9;
+      --btn-bg: #2f54eb;
+      --btn-hover-bg: #1742c8;
+      --shadow: rgba(47, 84, 235, 0.3);
+    }
+    /* === Container === */
+    .container {
+      background-color: var(--card-bg);
+      padding: 2.5rem 2rem 3rem;
+      width: 100%;
+      max-width: 460px;
+      border-radius: var(--radius);
+      box-shadow: 0 0 30px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+      position: relative;
+    }
+    /* === Header === */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .site-title {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: default;
+      user-select: text;
+    }
+    /* === Language & Theme toggle buttons === */
+    .toggles {
+      display: flex;
+      gap: 0.8rem;
+    }
+    button.toggle-btn {
+      background-color: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.5rem 0.9rem;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+      transition: background-color 0.25s ease;
+    }
+    button.toggle-btn:hover {
+      background-color: var(--primary);
+    }
+    button#theme-toggle {
+      font-size: 1.2rem;
+      padding: 0.4rem 0.75rem;
+      user-select: none;
+    }
+    /* === Input & Download button === */
+    input#videoURL {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-size: 1rem;
+      border-radius: var(--radius);
+      border: 2px solid var(--primary);
+      background-color: transparent;
+      color: var(--text);
+      outline-offset: 2px;
+      outline-color: var(--primary);
+      transition: border-color 0.3s ease;
+    }
+    input#videoURL::placeholder {
+      color: var(--text);
+      opacity: 0.6;
+    }
+    input#videoURL:focus {
+      border-color: var(--accent);
+    }
+    button.download {
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(90deg, #1f6feb, #3b82f6);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.5);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      user-select: none;
+    }
+    button.download:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.7);
+    }
+    /* === Offers section === */
+    .offers {
+      margin-top: 1.8rem;
+    }
+    .offers h2 {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      user-select: none;
+      text-align: center;
+    }
+    .offers-list a {
+      display: block;
+      background-color: var(--btn-bg);
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.8rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    .offers-list a:hover {
+      background-color: var(--btn-hover-bg);
+    }
+    /* === Responsive === */
+    @media (max-width: 500px) {
+      .container {
+        padding: 1.8rem 1.5rem 2.5rem;
+      }
+    }
+  </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="logo">VidGrab</div>
-            <div class="header-controls">
-                <button class="theme-toggle" title="Toggle Dark Mode">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <button class="language-toggle" title="Switch Language">
-                    <span class="lang-en">EN</span>
-                    <span class="lang-ar" style="display: none">AR</span>
-                </button>
-            </div>
-        </header>
+<body data-theme="dark" lang="en">
+  <div class="container" role="main" aria-label="Video downloader">
+    <header>
+      <h1 class="site-title" id="siteTitle">🌙 VideoGenius</h1>
+      <div class="toggles" role="group" aria-label="Toggle language and theme">
+        <button class="toggle-btn" id="lang-en" aria-pressed="true" aria-label="Switch to English">EN</button>
+        <button class="toggle-btn" id="lang-ar" aria-pressed="false" aria-label="Switch to Arabic">AR</button>
+        <button class="toggle-btn" id="theme-toggle" aria-label="Toggle dark and light theme" title="Toggle dark/light mode">🌙</button>
+      </div>
+    </header>
 
-        <main>
-            <section class="hero">
-                <h1 class="lang-en">Download Videos from Any Platform</h1>
-                <h1 class="lang-ar" style="display: none">تحميل الفيديوهات من أي منصة</h1>
-                <p class="lang-en">Fast, secure downloads from YouTube, Instagram, TikTok and more</p>
-                <p class="lang-ar" style="display: none">تحميل سريع وآمن من يوتيوب، إنستغرام، تيك توك وغيرها</p>
-            </section>
+    <input
+      type="text"
+      id="videoURL"
+      placeholder="Paste video URL here"
+      aria-label="Video URL input"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <button class="download" id="downloadBtn" aria-label="Download video">Download</button>
 
-            <section class="downloader-container">
-                <h2 class="lang-en">Video Downloader</h2>
-                <h2 class="lang-ar" style="display: none">أداة التحميل</h2>
-                
-                <div class="input-group">
-                    <input type="url" id="video-url" class="lang-en" placeholder="Paste video URL here...">
-                    <input type="url" id="video-url-ar" class="lang-ar" placeholder="الصق رابط الفيديو هنا..." style="display: none">
-                    <button id="download-btn" class="lang-en">Download</button>
-                    <button id="download-btn-ar" class="lang-ar" style="display: none">تحميل</button>
-                </div>
-                
-                <div class="loader" id="loader"></div>
-                
-                <div class="video-info" id="video-info">
-                    <div class="video-preview">
-                        <div class="thumbnail-container">
-                            <div class="thumbnail">
-                                <img id="video-thumbnail" src="" alt="Video thumbnail">
-                            </div>
-                        </div>
-                        <div class="video-details">
-                            <h3 class="video-title" id="video-title"></h3>
-                            <div class="video-meta">
-                                <span id="video-duration"></span>
-                                <span id="video-views"></span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="format-options">
-                        <h4 class="format-title lang-en">Available Formats</h4>
-                        <h4 class="format-title lang-ar" style="display: none">الصيغ المتاحة</h4>
-                        <div class="format-grid" id="format-options"></div>
-                    </div>
-                </div>
+    <section class="offers" aria-live="polite">
+      <h2 id="offersTitle">🔥 Trending Offers</h2>
+      <div class="offers-list" id="offerContainer" role="list"></div>
+    </section>
+  </div>
 
-                <!-- CPA Offers Container -->
-                <div id="offerContainer"></div>
-            </section>
-        </main>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script>
+    // --- Translations ---
+    const translations = {
+      en: {
+        lang: 'en',
+        dir: 'ltr',
+        placeholder: 'Paste video URL here',
+        download: 'Download',
+        offersTitle: '🔥 Trending Offers',
+        siteTitle: '🌙 VideoGenius',
+      },
+      ar: {
+        lang: 'ar',
+        dir: 'rtl',
+        placeholder: 'ألصق رابط الفيديو هنا',
+        download: 'تنزيل',
+        offersTitle: '🔥 العروض الرائجة',
+        siteTitle: '🌙 عبقري الفيديو',
+      }
+    };
 
-        <footer>
-            <div class="footer-links">
-                <a href="#" class="lang-en">About</a>
-                <a href="#" class="lang-ar" style="display: none">عن الموقع</a>
-                <a href="#" class="lang-en">Contact</a>
-                <a href="#" class="lang-ar" style="display: none">اتصل بنا</a>
-                <a href="#" class="lang-en">Privacy Policy</a>
-                <a href="#" class="lang-ar" style="display: none">سياسة الخصوصية</a>
-            </div>
-            <div class="social-icons">
-                <a href="#"><i class="fab fa-facebook"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-youtube"></i></a>
-            </div>
-            <p class="copyright lang-en">© 2023 VidGrab. All rights reserved.</p>
-            <p class="copyright lang-ar" style="display: none">© 2023 فيدجراب. جميع الحقوق محفوظة.</p>
-        </footer>
-    </div>
+    // Elements
+    const langEnBtn = document.getElementById('lang-en');
+    const langArBtn = document.getElementById('lang-ar');
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const videoURLInput = document.getElementById('videoURL');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const offerContainer = document.getElementById('offerContainer');
+    const offersTitle = document.getElementById('offersTitle');
+    const siteTitle = document.getElementById('siteTitle');
+    const body = document.body;
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script>
-        // Dark Mode Toggle
-        const themeToggle = document.querySelector('.theme-toggle');
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const icon = themeToggle.querySelector('i');
-            icon.classList.toggle('fa-moon');
-            icon.classList.toggle('fa-sun');
-            
-            // Save preference to localStorage
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDarkMode);
-        });
+    // Current state
+    let currentLang = 'en';
+    let currentTheme = 'dark';
 
-        // Check for saved dark mode preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-            const icon = themeToggle.querySelector('i');
-            icon.classList.remove('fa-moon');
-            icon.classList.add('fa-sun');
+    function setLanguage(lang) {
+      if (!translations[lang]) return;
+      currentLang = lang;
+      // Set lang and dir attributes on <html> and <body>
+      document.documentElement.lang = translations[lang].lang;
+      document.documentElement.dir = translations[lang].dir;
+      body.lang = translations[lang].lang;
+      body.dir = translations[lang].dir;
+
+      // Update UI text
+      videoURLInput.placeholder = translations[lang].placeholder;
+      downloadBtn.textContent = translations[lang].download;
+      offersTitle.textContent = translations[lang].offersTitle;
+      siteTitle.textContent = translations[lang].siteTitle;
+
+      // Update ARIA attributes for toggles
+      langEnBtn.setAttribute('aria-pressed', lang === 'en');
+      langArBtn.setAttribute('aria-pressed', lang === 'ar');
+
+      // Adjust text alignment and input direction
+      if (lang === 'ar') {
+        videoURLInput.style.textAlign = 'right';
+      } else {
+        videoURLInput.style.textAlign = 'left';
+      }
+    }
+
+    function toggleTheme() {
+      if (currentTheme === 'dark') {
+        currentTheme = 'light';
+        body.setAttribute('data-theme', 'light');
+        themeToggleBtn.textContent = '☀️';
+      } else {
+        currentTheme = 'dark';
+        body.setAttribute('data-theme', 'dark');
+        themeToggleBtn.textContent = '🌙';
+      }
+    }
+
+    function downloadVideo() {
+      const url = videoURLInput.value.trim();
+      if (!url) {
+        alert(currentLang === 'ar' ? 'من فضلك أدخل رابط فيديو' : 'Please enter a video URL');
+        return;
+      }
+      // مثال: استبدل الرابط التالي بالAPI أو السيرفر اللي عندك لتحميل الفيديو
+      const downloadLink = `https://example-downloader.com/download?url=${encodeURIComponent(url)}`;
+      window.open(downloadLink, '_blank');
+    }
+
+    function loadOffers() {
+      $.getJSON(
+        "https://d2jgih9urxpa47.cloudfront.net/public/offers/feed.php?user_id=760591&api_key=f53996a2de7f6baa5d3c01033bed5b10&s1=&s2=&callback=?",
+        function (offers) {
+          offerContainer.innerHTML = '';
+          const maxOffers = 5;
+          offers = offers.splice(0, maxOffers);
+          offers.forEach((offer) => {
+            const a = document.createElement('a');
+            a.href = offer.url;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.title = offer.conversion;
+            a.textContent = offer.anchor;
+            offerContainer.appendChild(a);
+          });
         }
+      );
+    }
 
-        // Language Toggle
-        const languageToggle = document.querySelector('.language-toggle');
-        languageToggle.addEventListener('click', () => {
-            const isArabic = document.querySelector('.lang-ar').style.display === 'none';
-            
-            // Toggle all English elements
-            document.querySelectorAll('.lang-en').forEach(el => {
-                el.style.display = isArabic ? 'none' : 'block';
-            });
-            
-            // Toggle all Arabic elements
-            document.querySelectorAll('.lang-ar').forEach(el => {
-                el.style.display = isArabic ? 'block' : 'none';
-            });
-            
-            // Update HTML direction and lang attribute
-            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
-            document.documentElement.lang = isArabic ? 'ar' : 'en';
-            
-            // Save language preference
-            localStorage.setItem('language', isArabic ? 'ar' : 'en');
-        });
+    // Event Listeners
+    langEnBtn.addEventListener('click', () => setLanguage('en'));
+    langArBtn.addEventListener('click', () => setLanguage('ar'));
+    themeToggleBtn.addEventListener('click', toggleTheme);
+    downloadBtn.addEventListener('click', downloadVideo);
 
-        // Check for saved language preference
-        if (localStorage.getItem('language') === 'ar') {
-            languageToggle.click(); // Simulate click to switch to Arabic
+    // Init
+    setLanguage(currentLang);
+    toggleTheme(); // Set initial theme icon correctly
+    toggleTheme(); // Toggle back to dark after icon fix
+    loadOffers();
+
+    // Check leads every 15 seconds (optional)
+    setInterval(() => {
+      $.getJSON(
+        "https://d2jgih9urxpa47.cloudfront.net/public/external/check2.php?testing=0&callback=?",
+        (leads) => {
+          if (leads.length) {
+            console.log(`Leads completed: ${leads.length}`, leads);
+          }
         }
-
-        // Video Download Functionality with CPA Offers
-        document.getElementById('download-btn').addEventListener('click', fetchVideoInfo);
-        document.getElementById('download-btn-ar').addEventListener('click', fetchVideoInfo);
-
-        function fetchVideoInfo() {
-            const videoUrl = document.documentElement.lang === 'ar' 
-                ? document.getElementById('video-url-ar').value 
-                : document.getElementById('video-url').value;
-            
-            if (!videoUrl) {
-                alert(document.documentElement.lang === 'ar' 
-                    ? 'الرجاء إدخال رابط الفيديو' 
-                    : 'Please enter a video URL');
-                return;
-            }
-
-            // Show loader
-            document.getElementById('loader').style.display = 'block';
-            document.getElementById('video-info').style.display = 'none';
-            document.getElementById('offerContainer').innerHTML = '';
-
-            // First show CPA offers
-            loadCpaOffers();
-
-            // Then show video info (simulated)
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                showMockVideoInfo();
-            }, 1500);
-        }
-
-        function loadCpaOffers() {
-            $.getJSON("https://d3o07fqjkwc0s0.cloudfront.net/public/offers/feed.php?user_id=760591&api_key=f53996a2de7f6baa5d3c01033bed5b10&s1=&s2=&callback=?",
-                function(offers){
-                    var html = '';
-                    var numOffers = 5; // Show 5 offers
-                    offers = offers.splice(0, numOffers);
-                    
-                    $.each(offers, function(key, offer){
-                        html += `
-                            <div class="offer-card">
-                                <a href="${offer.url}" target="_blank">
-                                    <h3 class="offer-title">${offer.anchor}</h3>
-                                    <p class="offer-description">${offer.conversion}</p>
-                                    <span class="offer-cta">${document.documentElement.lang === 'ar' ? 'ابدأ الآن' : 'Get Started'}</span>
-                                </a>
-                            </div>
-                        `;
-                    });
-                    
-                    $("#offerContainer").html(html).hide().fadeIn();
-                    
-                    // Also track lead completions
-                    checkLeadsPeriodically();
-                });
-        }
-
-        function checkLeadsPeriodically() {
-            setInterval(function() {
-                $.getJSON("https://d3o07fqjkwc0s0.cloudfront.net/public/external/check2.php?testing=0&callback=?",
-                    function(leads) {
-                        if (leads.length) {
-                            console.log("User completed offers - ready to serve download");
-                            // Here you would enable the actual download
-                        }
-                    });
-            }, 15000); // Check every 15 seconds
-        }
-
-        function showMockVideoInfo() {
-            // Mock data - in a real app, you'd get this after offer completion
-            const mockData = {
-                title: document.documentElement.lang === 'ar' 
-                    ? 'فيديو تجريبي لموقع التحميل' 
-                    : 'Demo Video for Download Site',
-                thumbnail: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
-                duration: '10:30',
-                views: document.documentElement.lang === 'ar' ? '١.٢ مليون مشاهدة' : '1.2M views',
-                formats: [
-                    { quality: '1080p', type: 'MP4', size: '125MB' },
-                    { quality: '720p', type: 'MP4', size: '85MB' },
-                    { quality: '480p', type: 'MP4', size: '45MB' },
-                    { quality: '360p', type: 'MP4', size: '25MB' },
-                    { quality: '128kbps', type: 'MP3', size: '8MB' }
-                ]
-            };
-
-            // Populate video info
-            document.getElementById('video-title').textContent = mockData.title;
-            document.getElementById('video-thumbnail').src = mockData.thumbnail;
-            document.getElementById('video-duration').textContent = mockData.duration;
-            document.getElementById('video-views').textContent = mockData.views;
-
-            // Populate format options
-            const formatGrid = document.getElementById('format-options');
-            formatGrid.innerHTML = '';
-            
-            mockData.formats.forEach(format => {
-                const formatBtn = document.createElement('button');
-                formatBtn.className = 'format-btn';
-                formatBtn.innerHTML = `
-                    <strong>${format.quality}</strong><br>
-                    ${format.type} • ${format.size}
-                `;
-                formatBtn.addEventListener('click', () => {
-                    alert(document.documentElement.lang === 'ar' 
-                        ? `جارٍ تحميل ${format.quality} ${format.type}...` 
-                        : `Downloading ${format.quality} ${format.type}...`);
-                });
-                formatGrid.appendChild(formatBtn);
-            });
-
-            // Show video info
-            document.getElementById('video-info').style.display = 'block';
-        }
-    </script>
+      );
+    }, 15000);
+  </script>
 </body>
 </html>
